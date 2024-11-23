@@ -9,6 +9,7 @@ public class SimpleHttpServer {
 
     public static void main(String[] args) {
         SimpleHttpServer server = new SimpleHttpServer();
+        // System.out.println("Current directory: " + new File("").getAbsolutePath());
         server.start(8080); 
     }
 
@@ -28,7 +29,13 @@ public class SimpleHttpServer {
         }
     }
 
-    // 1- Mi-parse ny requete an'ny client
+    /* 
+    Step 1: parse request
+    Anaty Request:
+        -Request line: GET /fako.html HTTP/1.1
+        -Headers: {host: fako.com}
+        -Body (post, put, patch ihany no manana): name=nathan&bobota=be
+    */
     private void handleClient(Socket clientSocket) {
         try (
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -61,9 +68,10 @@ public class SimpleHttpServer {
                 method.equalsIgnoreCase("PUT") ||
                 method.equalsIgnoreCase("PATCH")
             ) {
-                while (in.ready()) {
-                    body.append((char) in.read());
-                }
+                int contentLength = Integer.parseInt(headers.getOrDefault("Content-Length", "0"));
+                char[] bodyChars = new char[contentLength];
+                in.read(bodyChars, 0, contentLength);
+                body.append(bodyChars);
             }
 
             // Generate Response
@@ -85,45 +93,114 @@ public class SimpleHttpServer {
 
 
     /* 
-    2. Avy mi-parse request, migenerer HTTP response MIFANARAKA amin'ilay request
+    Step2: generate response
 
-    STEPS:
-        -Set HTTP Status Line: HTTP/1.1 404 Not Found
-        -Add Headers:
-            Content-Type (e.g., text/html, application/json).
-            Content-Length (length of the response body in bytes).
-        -Add Body:
-            HTML, JSON, text
+    Anaty Response:
+        -HTTP Status Line: HTTP/1.1 404 Not Found
+        -Headers: {Content-Type, application/json)} {Content-Length, 42069}
+        -Body: HTML, JSON, text
     */
 
+    // Generate HTTP Response Based on Request Method and Path
     private Response generateResponse(String method, String path, String body) {
         Response response = new Response();
 
+        // GET ho an' ny fichiers
         if (method.equalsIgnoreCase("GET")) {
-            if (path.equals("/")) {
-                String responseBody = "<html><body><h1>Welcome to Simple HTTP Server</h1></body></html>";
-                response.setStatus(200, "OK");
-                response.addHeader("Content-Type", "text/html");
+            // localhost8080: blablabla/Apache/java
+            String filePath = "../" + "www" + (path.equals("/") ? "/index.html" : path);
+            File file = new File(filePath);
+
+            if (file.exists() && !file.isDirectory()) {
+
+                // Serve the requested file
+                String contentType = getContentType(file);
+                String responseBody = readFileContent(file);
+                response.setStatus(200);
+                response.addHeader("Content-Type", contentType);
                 response.setBody(responseBody);
+
+            } else if (file.exists() && file.isDirectory()) {
+
+                // if(directory), serve index.html by default
+                File defaultFile = new File(filePath + "/index.html");
+                if (defaultFile.exists()) {
+                    String responseBody = readFileContent(defaultFile);
+                    response.setStatus(200);
+                    response.setBody(responseBody);
+                } else {
+                    response.setStatus(404);
+                    response.addHeader("Content-Type", "text/plain");
+                    response.setBody("Error 404: Resource not found");
+                }
+                
             } else {
-                String responseBody = "Error 404: Resource not found";
-                response.setStatus(404, "Not Found");
+
+                // Resource not found
+                response.setStatus(404);
                 response.addHeader("Content-Type", "text/plain");
-                response.setBody(responseBody);
+                response.setBody("Error 404: Resource not found");
+
             }
-        } else if (method.equalsIgnoreCase("POST")) {
-            String responseBody = "Received POST data: " + body;
-            response.setStatus(200, "OK");
+
+        } else if (
+                    method.equalsIgnoreCase("POST") ||
+                    method.equalsIgnoreCase("PUT") ||
+                    method.equalsIgnoreCase("PATCH")
+                ) {
+
+            // Handle POST/PUT/PATCH request
+            String responseBody = "Received Data: " + body;
+            response.setStatus(200);
             response.addHeader("Content-Type", "text/plain");
             response.setBody(responseBody);
+
         } else {
-            String responseBody = "Error 405: Method not allowed";
-            response.setStatus(405, "Method Not Allowed");
+            
+            // Handle other HTTP methods (POST, PUT, PATCH)
+            String responseBody = "Error 405: Method Not Allowed";
+            response.setStatus(405);
             response.addHeader("Content-Type", "text/plain");
             response.setBody(responseBody);
+            
         }
 
         return response;
+    }
+
+    // file to string 
+    private String readFileContent(File file) {
+        StringBuilder content = new StringBuilder();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content.toString();
+    }
+
+    private String getContentType(File file) {
+        String fileName = file.getName();
+        if (fileName.endsWith(".html")) {
+            return "text/html";
+        } else if (fileName.endsWith(".css")) {
+            return "text/css";
+        } else if (fileName.endsWith(".js")) {
+            return "application/javascript";
+        } else if (fileName.endsWith(".json")) {
+            return "application/json";
+        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (fileName.endsWith(".png")) {
+            return "image/png";
+        } else {
+            return "application/octet-stream"; // Default binary type
+        }
     }
 
 }

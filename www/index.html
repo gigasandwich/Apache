@@ -6,6 +6,45 @@
     <title>Index</title>
 </head>
 <body>
-    <h1>Nathan and Yvan's projec</h1>
+    
+    <!-- Query -->
+    <h1>Form with GET Method</h1>
+    <form action="http://localhost:8080/getData" method="GET">
+        <label for="name">Name: </label>
+        <input type="text" id="name" name="name" value="John Doe">
+        <button type="submit">Submit GET</button>
+    </form>
+
+    <br>
+
+    <!-- Submit -->
+    <h1>Form with POST Method</h1>
+    <form action="http://localhost:8080/postData" method="POST">
+        <label for="message">Message: </label>
+        <input type="text" id="message" name="message" value="Hello, Server!">
+        <button type="submit">Submit POST</button>
+    </form>
+
+    <br>
+
+    <!-- Update -->
+    <h1>Form with PUT Method</h1>
+    <form action="http://localhost:8080/putData" method="POST" id="putForm">
+        <label for="update">Update Info: </label>
+        <input type="text" id="update" name="update" value="Updated info">
+        <button type="submit" onclick="sendPutRequest()">Submit PUT</button>
+    </form>
+
+    <br>
+
+    <!-- Delete -->
+    <h1>Form with DELETE Method</h1>
+    <form action="http://localhost:8080/deleteData" method="POST" id="deleteForm">
+        <label for="delete">Delete Info: </label>
+        <input type="text" id="delete" name="delete" value="Info to delete">
+        <button type="submit" onclick="sendDeleteRequest()">Submit DELETE</button>
+    </form>
+
+    <script src="../js/script.js"></script>
 </body>
 </html>
