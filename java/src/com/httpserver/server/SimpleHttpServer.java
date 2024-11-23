@@ -7,7 +7,7 @@ public class SimpleHttpServer {
 
     public static void main(String[] args) {
         SimpleHttpServer server = new SimpleHttpServer();
-        server.start(8080); // Start server on port 8080
+        server.start(8080); 
     }
 
     public void start(int port) {
@@ -15,7 +15,7 @@ public class SimpleHttpServer {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server started on port " + port);
 
-            // For accepting multiple client connections
+            // Multiple client connections
             while (true) {
                 Socket clientSocket = serverSocket.accept(); 
                 handleClient(clientSocket); 
@@ -42,15 +42,15 @@ public class SimpleHttpServer {
 
             System.out.println("Received request:\n" + request);
 
-            // tokony HTTP response: 
-            // header
+            // Tokony HTTP response: 
+            // Header
             out.println("HTTP/1.1 200 OK");
             out.println("Content-Type: text/plain");
             out.println("Content-Length: 13");
 
-            out.println();
+            out.println(); // Manavaka ny header sy ny body
 
-            // body
+            // Body
             out.println("Hello, World!");
 
         } catch (IOException e) {
