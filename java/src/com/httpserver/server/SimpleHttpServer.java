@@ -129,20 +129,22 @@ public class SimpleHttpServer {
                     response.setStatus(200);
                     response.setBody(responseBody);
                 } else {
-                    response.setStatus(404);
+                    int statusCode = 404;
+                    response.setStatus(statusCode);
                     response.addHeader("Content-Type", "text/plain");
-                    response.setBody("Error 404: Resource not found");
+                    response.setBody(statusCode);
                 }
                 
             } else {
 
-                // Resource not found
-                response.setStatus(404);
+                int statusCode = 404;
+                response.setStatus(statusCode);
                 response.addHeader("Content-Type", "text/plain");
-                response.setBody("Error 404: Resource not found");
+                response.setBody(statusCode);
 
             }
 
+        // post, put and patch method
         } else if (
                     method.equalsIgnoreCase("POST") ||
                     method.equalsIgnoreCase("PUT") ||
@@ -158,10 +160,10 @@ public class SimpleHttpServer {
         } else {
             
             // Handle other HTTP methods (POST, PUT, PATCH)
-            String responseBody = "Error 405: Method Not Allowed";
-            response.setStatus(405);
+            int statusCode = 405;
+            response.setStatus(statusCode);
             response.addHeader("Content-Type", "text/plain");
-            response.setBody(responseBody);
+            response.setBody(statusCode);
             
         }
 

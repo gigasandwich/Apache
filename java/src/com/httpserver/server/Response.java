@@ -11,7 +11,7 @@ public class Response {
     private StringBuilder body;
     private int statusCode;
     private String statusMessage;
-    private static Map<Integer, String> status_messages = getStatus_Messages();
+    private static Map<Integer, String> httpStatusMessages = getStatusMessages();
 
     // Default values 
     public Response() {
@@ -30,7 +30,7 @@ public class Response {
 
     public void setStatus(int statusCode) {
         this.statusCode = statusCode;
-        this.statusMessage = status_messages.getOrDefault(statusCode, "Unknown Status");
+        this.statusMessage = httpStatusMessages.getOrDefault(statusCode, "Unknown Status");
     }
 
     // host: fako.com, user-agent: opera/1.2
@@ -41,6 +41,11 @@ public class Response {
     // Body: ilay tadiavin'ny client: page/sary/JSON object
     public void setBody(String bodyContent) {
         this.body.append(bodyContent);
+        addHeader("Content-Length", String.valueOf(body.length()));
+    }
+
+    public void setBody(int statusCode){
+        this.body.append("Error " + statusCode + ": " + httpStatusMessages.get(statusCode));
         addHeader("Content-Length", String.valueOf(body.length()));
     }
 
@@ -73,7 +78,7 @@ public class Response {
         return response.toString();
     }
 
-    static Map<Integer, String> getStatus_Messages(){
+    static Map<Integer, String> getStatusMessages(){
         Map<Integer, String> answer = new HashMap<>();
         answer.put(200, "OK");
         answer.put(201, "Created");
