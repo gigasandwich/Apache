@@ -29,13 +29,13 @@ public class SimpleHttpServer {
     private void handleClient(Socket clientSocket) {
         try (
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            // BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            // PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
         ) {
             String line;
             StringBuilder request = new StringBuilder();
 
-            // Read the HTTP request from the client
+            // Read HTTP request from the client
             while ((line = in.readLine()) != null && !line.isEmpty()) {
                 request.append(line).append("\n");
             }
@@ -44,14 +44,14 @@ public class SimpleHttpServer {
 
             // tokony HTTP response: 
             // header
-            out.println("HTTP/1.1 200 OK");
-            out.println("Content-Type: text/plain");
-            out.println("Content-Length: 13");
+            out.write("HTTP/1.1 200 OK"); out.newLine();
+            out.write("Content-Type: text/plain"); out.newLine();
+            out.write("Content-Length: 13"); out.newLine();
 
-            out.println();
+            out.newLine(); // Manavaka ny header sy ny body
 
             // body
-            out.println("Hello, World!");
+            out.write("Hello, World!");
 
         } catch (IOException e) {
             e.printStackTrace();
