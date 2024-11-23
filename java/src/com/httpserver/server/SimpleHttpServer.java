@@ -42,7 +42,7 @@ public class SimpleHttpServer {
 
             System.out.println("Received request:\n" + request);
 
-            // HTTP response:
+            // tokony HTTP response: 
             // header
             out.println("HTTP/1.1 200 OK");
             out.println("Content-Type: text/plain");
