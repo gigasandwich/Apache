@@ -1,7 +1,7 @@
 @REM on windows
-javac -d bin/ src/com/httpserver/server/*.java
-@REM javac -d bin/ src/com/httpserver/client/*.java 
+javac -d bin/ src/server/*.java
+@REM javac -d bin/ src/client/*.java 
 
 @REM server execution
-javac -cp bin/ com.httpserver.server.SimpleHttpServer.java
+java -cp bin/ server.SimpleHttpServer.java
 

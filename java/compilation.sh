@@ -1,7 +1,7 @@
 #!/bin/bash
 
-javac -d bin/ src/com/httpserver/server/*.java
-# javac -d bin/ src/com/httpserver/client/*.java
+javac -d "bin"/ src/server/*.java
+# javac -d "bin"/ src/client/*.java
 
 # server execution
-java -cp bin com.httpserver.server.SimpleHttpServer
+java -cp "bin" server.SimpleHttpServer
